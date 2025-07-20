@@ -1,13 +1,19 @@
 const { verifyToken } = require('../utils/jwt');
 
 const authMiddleware = (req, res, next) => {
-  const token = req.headers.authorization;
+  const authHeader = req.headers.authorization;
 
-  if (!token) {
+  if (!authHeader) {
     return res.status(401).json({ message: 'Authentication token missing' });
   }
 
-  const decoded = verifyToken(token.split(' ')[1]);
+  const tokenParts = authHeader.split(' ');
+  if (tokenParts.length !== 2 || tokenParts[0] !== 'Bearer') {
+    return res.status(401).json({ message: 'Invalid token format' });
+  }
+
+  const token = tokenParts[1];
+  const decoded = verifyToken(token);
 
   if (!decoded) {
     return res.status(401).json({ message: 'Invalid or expired token' });

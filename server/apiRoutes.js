@@ -1,7 +1,7 @@
 const express = require('express');
 const bcrypt = require('bcryptjs');
 const { mongoDb } = require('./db');
-const { generateToken } = require('./utils/jwt');
+const { generateToken, generateRefreshToken } = require('./utils/jwt');
 const authMiddleware = require('./middleware/auth');
 
 const router = express.Router();
@@ -34,7 +34,8 @@ router.post('/register', async (req, res) => {
     await user.save();
 
     const token = generateToken(user._id.toString());
-    res.status(201).json({ token, user: { id: user._id, email, name } });
+    const refreshToken = generateRefreshToken(user._id.toString());
+    res.status(201).json({ token, refreshToken, user: { id: user._id, email, name } });
   } catch (error) {
     res.status(500).json({ message: 'Registration failed', error: error.message });
   }
@@ -60,9 +61,37 @@ router.post('/login', async (req, res) => {
     }
 
     const token = generateToken(user._id.toString());
-    res.json({ token, user: { id: user._id, email, name: user.name } });
+    const refreshToken = generateRefreshToken(user._id.toString());
+    res.json({ token, refreshToken, user: { id: user._id, email, name: user.name } });
   } catch (error) {
     res.status(500).json({ message: 'Login failed', error: error.message });
+  }
+});
+
+// Refresh Token Endpoint
+router.post('/refresh-token', async (req, res) => {
+  try {
+    const { refreshToken } = req.body;
+
+    if (!refreshToken) {
+      return res.status(400).json({ message: 'Refresh token is required' });
+    }
+
+    const decoded = require('./utils/jwt').verifyToken(refreshToken);
+    if (!decoded) {
+      return res.status(401).json({ message: 'Invalid or expired refresh token' });
+    }
+
+    const userId = decoded.id;
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    const newToken = generateToken(userId);
+    res.json({ token: newToken });
+  } catch (error) {
+    res.status(500).json({ message: 'Token refresh failed', error: error.message });
   }
 });
 
