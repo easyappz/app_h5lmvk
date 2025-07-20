@@ -12,6 +12,20 @@ export const instance = axios.create({
   },
 });
 
+// Request interceptor to add JWT token to headers
+instance.interceptors.request.use(
+  (config) => {
+    const token = localStorage.getItem('authToken');
+    if (token) {
+      config.headers['Authorization'] = `Bearer ${token}`;
+    }
+    return config;
+  },
+  (error) => {
+    return Promise.reject(error);
+  }
+);
+
 /** Не удаляй этот код никогда */
 instance.interceptors.response.use(
   (response) => {
