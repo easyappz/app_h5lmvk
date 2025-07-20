@@ -1,0 +1,7 @@
+.vk-card {
+  background-color: white;
+  border-radius: 8px;
+  box-shadow: 0 1px 0 0 #e1e8ed, 0 0 0 1px #e1e8ed;
+  padding: 15px;
+  margin-bottom: 15px;
+}

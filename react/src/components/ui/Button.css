@@ -1,0 +1,53 @@
+.vk-button {
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-family: -apple-system, BlinkMacSystemFont, 'Roboto', sans-serif;
+  font-weight: 500;
+  transition: background-color 0.2s ease;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.vk-button--primary {
+  background-color: #5181b8;
+  color: white;
+}
+
+.vk-button--primary:hover {
+  background-color: #4672a4;
+}
+
+.vk-button--secondary {
+  background-color: #ebedf0;
+  color: #2c2d2e;
+}
+
+.vk-button--secondary:hover {
+  background-color: #dfe1e5;
+}
+
+.vk-button--medium {
+  padding: 8px 16px;
+  font-size: 14px;
+}
+
+.vk-button--small {
+  padding: 6px 12px;
+  font-size: 13px;
+}
+
+.vk-button--large {
+  padding: 10px 20px;
+  font-size: 16px;
+}
+
+.vk-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.vk-button--full-width {
+  width: 100%;
+}

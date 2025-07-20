@@ -1,0 +1,16 @@
+.vk-input {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid #d3d9de;
+  border-radius: 4px;
+  font-size: 14px;
+  font-family: -apple-system, BlinkMacSystemFont, 'Roboto', sans-serif;
+  box-sizing: border-box;
+  margin-bottom: 10px;
+}
+
+.vk-input:focus {
+  outline: none;
+  border-color: #5181b8;
+  box-shadow: 0 0 0 2px rgba(81, 129, 184, 0.2);
+}

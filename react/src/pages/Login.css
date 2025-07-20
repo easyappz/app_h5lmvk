@@ -1,0 +1,29 @@
+.vk-login {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: calc(100vh - 100px);
+}
+
+.vk-login h2 {
+  margin-top: 0;
+  margin-bottom: 20px;
+  font-size: 20px;
+  text-align: center;
+  color: #333;
+}
+
+.vk-login__register {
+  margin-top: 15px;
+  text-align: center;
+  font-size: 14px;
+}
+
+.vk-login__register a {
+  color: #5181b8;
+  text-decoration: none;
+}
+
+.vk-login__register a:hover {
+  text-decoration: underline;
+}
