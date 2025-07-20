@@ -231,4 +231,91 @@ router.get('/messages', authMiddleware, async (req, res) => {
   }
 });
 
+// Get Chats List with Last Message and Unread Count
+router.get('/messages/chats', authMiddleware, async (req, res) => {
+  try {
+    const userId = req.userId;
+
+    // Aggregate to find unique chat partners with the last message
+    const chats = await Message.aggregate([
+      {
+        $match: {
+          $or: [{ sender: userId }, { receiver: userId }],
+        },
+      },
+      {
+        $sort: { createdAt: -1 },
+      },
+      {
+        $group: {
+          _id: {
+            $cond: [
+              { $eq: ['$sender', userId] },
+              '$receiver',
+              '$sender',
+            ],
+          },
+          lastMessage: { $first: '$$ROOT' },
+        },
+      },
+      {
+        $lookup: {
+          from: 'users',
+          localField: '_id',
+          foreignField: '_id',
+          as: 'user',
+        },
+      },
+      {
+        $unwind: '$user',
+      },
+      {
+        $project: {
+          'user.password': 0,
+        },
+      },
+    ]);
+
+    // Count unread messages for each chat
+    const chatsWithUnread = await Promise.all(
+      chats.map(async (chat) => {
+        const unreadCount = await Message.countDocuments({
+          sender: chat._id,
+          receiver: userId,
+          isRead: false,
+        });
+        return {
+          ...chat,
+          unreadCount,
+        };
+      })
+    );
+
+    res.json(chatsWithUnread);
+  } catch (error) {
+    res.status(500).json({ message: 'Failed to fetch chats', error: error.message });
+  }
+});
+
+// Mark Messages as Read
+router.put('/messages/read/:userId', authMiddleware, async (req, res) => {
+  try {
+    const { userId } = req.params;
+    const currentUserId = req.userId;
+
+    await Message.updateMany(
+      {
+        sender: userId,
+        receiver: currentUserId,
+        isRead: false,
+      },
+      { $set: { isRead: true } }
+    );
+
+    res.json({ message: 'Messages marked as read' });
+  } catch (error) {
+    res.status(500).json({ message: 'Failed to mark messages as read', error: error.message });
+  }
+});
+
 module.exports = router;
